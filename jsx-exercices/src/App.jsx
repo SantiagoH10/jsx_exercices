@@ -65,6 +65,32 @@ function FruitList() {
   )
 }
 
+function StudentList() {
+  const students = [
+    { id: 1, name: "John", grade: "A" },
+    { id: 2, name: "Sarah", grade: "B" },
+    { id: 3, name: "Mike", grade: "A" }
+  ];
+
+  return(
+    <div>
+      {students.map(s => <p>{s.name}, student number {s.id}, grade : {s.grade}.</p>)}
+    </div>
+  )
+}
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h2>Count: {count}</h2>
+      <button onClick={() => setCount(count + 1)}>+</button>
+      <button onClick={() => setCount(count - 1)}>-</button>
+    </div>
+  )
+}
+
 
 
 function App() {
@@ -74,6 +100,8 @@ function App() {
       <UserCard name="Joe" age="25" email="foo@gmail.com" />
       <LoginStatus />
       <FruitList />
+      <StudentList />
+      <Counter />
     </div>
   );
 }
