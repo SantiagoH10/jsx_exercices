@@ -84,15 +84,6 @@ function GameBoard() {
             </button>
           ))}
         </div>
-        <div>
-          <button
-            onClick={
-              e => setColorArray([...colorArray, randColor()])
-            }
-          >
-            Add color
-          </button>
-        </div>
     </div>
   )
 }
