@@ -46,12 +46,23 @@ function GameBoard() {
     return indices;
   }
 
-  function NewRound() {
+
+
+  function showSequence() {
+    setIsShowingSequence(true);
     setGameStatus('showing');
+    showNextSquare(0); // Start the recursive sequence
+  }
+
+  
+
+  function NewRound() {
     setColorArray([...colorArray, randColor()]);
     setRound(round + 1);
     computerColorSeq(randShuffle());
+    showSequence();
   }
+
 
   function handlePlayerClick(i, c) {
   }
@@ -75,6 +86,7 @@ function GameBoard() {
               className={`
                   w-24 h-24 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-150 border-2 border-white focus:outline-none focus:ring-4 focus:ring-blue-300 cursor-pointer
                   ${gameStatus === "waiting" && i === 0 ? 'ring-2 ring-blue-500' : ''}
+                  ${highlightSquare === i ? 'brightness-125 ring-4 ring-yellow-300 animate-pulse' : ''}
                 `}
               style={{ backgroundColor: c}}
             >
