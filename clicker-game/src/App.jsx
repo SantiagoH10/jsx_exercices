@@ -291,12 +291,27 @@ function RpsGame() {
 }
 //#endregion
 
+//#region Word Scramble
+
+function WordScramble() {
+
+
+  return(
+    <div className="m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
+      <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble</p>
+    </div>
+  )
+}
+
+
+//#endregion
+
 
 function App() {
   return (
     <div>
       <MySociabble/>
-      <RpsGame/>
+      <WordScramble/>
     </div>
   )
 }
