@@ -1,6 +1,6 @@
 import './App.css'
 import cma from './assets/cma.png'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, StrictMode } from 'react'
 
 function MySociabble() {
   return(
@@ -293,12 +293,29 @@ function RpsGame() {
 
 //#region Word Scramble
 
+const word = "penny"
+
 function WordScramble() {
+  const [gameStatus, setGameStatus] = useState("new-game");
+  const [playerPos, setPlayerPos] = useState(null);
+  const [attemps, setAttempts] = useState(0);
+  
+  function randShuffle(word) {
+    const indices = Array.from({length: word.length}, (_, i) => i);
+    
+    // Fisher-Yates shuffle
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]]; // Swap
+    }
+    return indices;
+  }
+
 
 
   return(
     <div className="m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
-      <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble</p>
+      <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble : {word} and indices {randShuffle(word)}</p>
     </div>
   )
 }
@@ -309,10 +326,12 @@ function WordScramble() {
 
 function App() {
   return (
-    <div>
-      <MySociabble/>
-      <WordScramble/>
-    </div>
+    <StrictMode>
+      <div>
+        <MySociabble/>
+        <WordScramble/>
+      </div>
+    </StrictMode>
   )
 }
 
