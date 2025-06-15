@@ -293,13 +293,15 @@ function RpsGame() {
 
 //#region Word Scramble
 
-const word = "penny"
+const word = "wolf"
+
+const gameOverlays = {
+  newGame : "absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg",
+  gameWon : "absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg",
+  gameOver : "absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg"
+}
 
 function WordScramble() {
-  const [gameStatus, setGameStatus] = useState("new-game");
-  const [playerPos, setPlayerPos] = useState(null);
-  const [attemps, setAttempts] = useState(0);
-  
   function randShuffle(word) {
     const indices = Array.from({length: word.length}, (_, i) => i);
     
@@ -310,15 +312,104 @@ function WordScramble() {
     }
     return indices;
   }
+  
+  const [gameStatus, setGameStatus] = useState("newGame");
+  const [playerPos, setPlayerPos] = useState(0);
+  const [playerChoice, setPlayerChoice] = useState("");
+  const [attemps, setAttempts] = useState(0);
+  const [wordOrder, setWordOrder] = useState(randShuffle(word));
 
+  useEffect(() => {
+    console.log("effect running");
+    console.log(playerChoice);
+    console.log(playerPos);
+    console.log(word[playerPos]);
+    if(playerChoice !== word[playerPos] && playerChoice !== ""){
+      setGameStatus("gameOver");
+    }
+    
+    setPlayerPos(prevPos => prevPos + 1);
 
+    if (playerChoice === word[playerPos] && playerPos >= word.length-1) {
+      setGameStatus("gameWon");
+    }
+  }, [playerChoice]);
+
+  function newGame() {
+    setGameStatus("play");
+    setAttempts(0);
+    setPlayerPos(0);
+    setPlayerChoice("");
+  }
 
   return(
     <div className="m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
-      <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble : {word} and indices {randShuffle(word)}</p>
+      <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble</p>
+      <div>
+        <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap">
+          {wordOrder.map(i => {
+            return(<button 
+              disabled={gameStatus !== "play"}
+              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none" key={i}
+              onClick={()=>setPlayerChoice(word[i])}
+            >
+              {word[i]}
+            </button>)
+          })}
+        </div>
+        <GameOverlays gameStatus={gameStatus} onNewGame={newGame} />
+      </div>
     </div>
   )
 }
+
+function GameOverlays({gameStatus, onNewGame}) {
+  switch (gameStatus) {
+    case "newGame":
+      return(
+        <div className={gameOverlays[gameStatus]}>
+          <div className="bg-white p-6 rounded-xl shadow-xl border-2 border-blue-500">
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
+              onClick={()=>onNewGame()}
+            >
+              Start game
+            </button>
+          </div>
+        </div>
+      );
+    
+    case "gameWon":
+      return(
+        <div className={gameOverlays[gameStatus]}>
+          <p>
+            Correct! The word is indeed {word}.
+          </p>
+          <button
+            onClick={()=>onNewGame()}
+          >
+            Next word
+          </button>
+        </div>
+      )
+      
+    case "gameOver":
+      return(
+        <div className={gameOverlays[gameStatus]}>
+          <p>
+            You lost! The word was {word}.
+          </p>
+          <button
+            onClick={()=>onNewGame()}
+          >
+            Next word
+          </button>
+        </div>
+      )
+  }
+  
+}
+
 
 
 //#endregion
