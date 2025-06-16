@@ -315,31 +315,21 @@ function WordScramble() {
   
   const [gameStatus, setGameStatus] = useState("newGame");
   const [playerPos, setPlayerPos] = useState(0);
-  const [playerChoice, setPlayerChoice] = useState("");
   const [attemps, setAttempts] = useState(0);
   const [wordOrder, setWordOrder] = useState(randShuffle(word));
+  const [playerWord, setPlayerWord] = useState("");
 
   useEffect(() => {
-    console.log("effect running");
-    console.log(playerChoice);
-    console.log(playerPos);
-    console.log(word[playerPos]);
-    if(playerChoice !== word[playerPos] && playerChoice !== ""){
-      setGameStatus("gameOver");
+    if (playerWord.length === word.length) {
+      playerWord === word ? setGameStatus("gameWon") : setGameStatus("gameOver")
     }
-    
-    setPlayerPos(prevPos => prevPos + 1);
-
-    if (playerChoice === word[playerPos] && playerPos >= word.length-1) {
-      setGameStatus("gameWon");
-    }
-  }, [playerChoice]);
+  }, [playerWord]);
 
   function newGame() {
     setGameStatus("play");
     setAttempts(0);
     setPlayerPos(0);
-    setPlayerChoice("");
+    setPlayerWord("");
   }
 
   return(
@@ -351,7 +341,7 @@ function WordScramble() {
             return(<button 
               disabled={gameStatus !== "play"}
               className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none" key={i}
-              onClick={()=>setPlayerChoice(word[i])}
+              onClick={()=>setPlayerWord(prev => prev + word[i])}
             >
               {word[i]}
             </button>)
@@ -370,7 +360,7 @@ function GameOverlays({gameStatus, onNewGame}) {
         <div className={gameOverlays[gameStatus]}>
           <div className="bg-white p-6 rounded-xl shadow-xl border-2 border-blue-500">
             <button
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
+              className="bg-blue-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
               onClick={()=>onNewGame()}
             >
               Start game
@@ -382,28 +372,34 @@ function GameOverlays({gameStatus, onNewGame}) {
     case "gameWon":
       return(
         <div className={gameOverlays[gameStatus]}>
-          <p>
-            Correct! The word is indeed {word}.
-          </p>
-          <button
-            onClick={()=>onNewGame()}
-          >
-            Next word
-          </button>
+          <div className="bg-white p-6 rounded-xl shadow-xl border-2 border-blue-500">
+            <p className="text-gray-600">
+              Correct! The word is indeed {word}.
+            </p>
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
+              onClick={()=>onNewGame()}
+            >
+              New game
+            </button>
+          </div>
         </div>
       )
       
     case "gameOver":
       return(
         <div className={gameOverlays[gameStatus]}>
-          <p>
-            You lost! The word was {word}.
-          </p>
-          <button
-            onClick={()=>onNewGame()}
-          >
-            Next word
-          </button>
+          <div className="bg-white p-6 rounded-xl shadow-xl border-2 border-blue-500">
+            <p className="text-gray-600">
+              You suck! The word was {word}.
+            </p>
+            <button
+              className="bg-red-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
+              onClick={()=>onNewGame()}
+            >
+              Next word
+            </button>
+          </div>
         </div>
       )
   }
