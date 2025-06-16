@@ -429,13 +429,101 @@ function GameOverlays({gameStatus, onNewGame}) {
 
 //#endregion
 
+//#region Roman Numerals
+
+const romanSigns = ["I", "V", "X", "L", "C", "D", "M"];
+
+function RomanNumerals() {
+  function randNum() {
+    const max = 9999;
+    const min = 1;
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  function decimalToRoman(num) {
+    let roman = "";
+    let times = 0;
+    const mapping = {
+      values : [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1],
+      romans : ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+    }
+
+    for (let i = 0; i < mapping.values.length; i++) {
+      if (num / mapping.values[i] >= 1) {
+        num = num % mapping.values[i];
+        times = Math.floor(num / mapping.values[i]);
+        roman = mapping.romans[i].repeat(times);
+      }
+    }
+
+    return roman;
+  }
+  
+  const [gameStatus, setGameStatus] = useState("newGame");
+  const [decimal, setDecimal] = useState(randNum());
+  const [playerRoman, setPlayerRoman] = useState("");
+
+  useEffect(() => {
+    if (playerWord.length === word.length) {
+      playerWord === word ? setGameStatus("gameWon") : setGameStatus("gameOver")
+    }
+  }, [playerWord]);
+
+  function newGame() {
+    setGameStatus("play");
+    setPlayerWord("");
+    setWordOrder(randShuffle(word));
+    setClickedIndices([]);
+  }
+
+  function resetWord() {
+    setPlayerWord("");
+    setClickedIndices([]);
+  }
+
+  return(
+    <div className="m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
+      <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble</p>
+      <div>
+        <div id="wordGaps" className="flex flex-row items-center justify-center mb-4">          {word.split('').map((_, index) => (
+            <div className="w-8 h-10 border-b-2 border-gray-400 flex items-end justify-center text-xl font-bold text-gray-800 mx-1" key={index}>
+              {playerWord[index] || ""}
+            </div>
+          ))}
+        </div>
+        <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap">
+          {wordOrder.map(i => {
+            return(<button 
+              disabled={gameStatus !== "play" || clickedIndices.includes(i)}
+              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100"
+              key={i}
+              onClick={()=>{
+                setPlayerWord(prev => prev + word[i]);
+                setClickedIndices(prev => [...prev, i]);
+              }}
+            >
+              {word[i]}
+            </button>)
+          })}
+        </div>
+        <button
+          className = "relative top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm"
+          onClick={() => resetWord()}>
+          Reset
+        </button>
+        <GameOverlays gameStatus={gameStatus} onNewGame={newGame} />
+      </div>
+    </div>
+  )
+}
+//#endregion
 
 function App() {
   return (
     <StrictMode>
       <div>
         <MySociabble/>
-        <WordScramble/>
+        <RomanNumerals/>
       </div>
     </StrictMode>
   )
