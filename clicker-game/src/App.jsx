@@ -463,9 +463,15 @@ function RomanNumerals() {
     return decimalToRoman(num);
   });
   const [playerRoman, setPlayerRoman] = useState("");
+  const [w, setW] = useState(false);
 
   useEffect(() => {
-    playerRoman === roman ? newGame() : '';
+    if (playerRoman === roman) {
+      setW(true);
+      setTimeout(() => {
+        newGame();
+      }, 500);
+    }
   }, [playerRoman]);
 
   useEffect(() => {
@@ -499,6 +505,7 @@ function RomanNumerals() {
     const newDecimal = randNum();
     setDecimal(newDecimal);
     setRoman(decimalToRoman(newDecimal));
+    setW(false);
   }
 
   function resetNum() {
@@ -512,13 +519,18 @@ function RomanNumerals() {
   <div className="relative m-4 bg-yellow-100 p-12 rounded-lg shadow-lg border-2 border-roman-gold w-auto h-auto flex flex-col items-center justify-center">
     <p className="text-xl font-bold text-roman-red mb-4">Roman Numerals Training</p>
     <div>
-      <div>
-        <p className="text-4xl text-roman-red font-bold">
+      <div className="bg-roman-red/10 border-t-2 border-b-2 border-roman-gold py-4 px-8 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-roman-gold after:absolute after:right-0 after:top-0 after:bottom-0 after:w-1 after:bg-roman-gold">
+        <p className="text-4xl text-roman-red font-bold text-center">
           {decimal}
         </p>
       </div>
-      <div className="p-2">
-        <p className="text-4xl text-roman-gold/70">
+      <div className={`p-2 m-5 rounded-lg min-h-[4rem] flex items-center justify-center transition-all duration-500 ${
+          w 
+            ? "bg-green border-2 border-solid border-roman-gold shadow-lg shadow-roman-gold/50" 
+            : "bg-roman-red/5 border-2 border-dashed border-roman-gold/50"
+        }`}
+        >
+        <p className="text-4xl text-roman-gold/70 font-bold">
           {playerRoman === "" ? "?" : playerRoman}
         </p>
       </div>
