@@ -314,10 +314,9 @@ function WordScramble() {
   }
   
   const [gameStatus, setGameStatus] = useState("newGame");
-  const [playerPos, setPlayerPos] = useState(0);
-  const [attemps, setAttempts] = useState(0);
   const [wordOrder, setWordOrder] = useState(randShuffle(word));
   const [playerWord, setPlayerWord] = useState("");
+  const [clickedIndices, setClickedIndices] = useState([])
 
   useEffect(() => {
     if (playerWord.length === word.length) {
@@ -327,9 +326,14 @@ function WordScramble() {
 
   function newGame() {
     setGameStatus("play");
-    setAttempts(0);
-    setPlayerPos(0);
     setPlayerWord("");
+    setWordOrder(randShuffle(word));
+    setClickedIndices([]);
+  }
+
+  function resetWord() {
+    setPlayerWord("");
+    setClickedIndices([]);
   }
 
   return(
@@ -339,14 +343,23 @@ function WordScramble() {
         <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap">
           {wordOrder.map(i => {
             return(<button 
-              disabled={gameStatus !== "play"}
-              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none" key={i}
-              onClick={()=>setPlayerWord(prev => prev + word[i])}
+              disabled={gameStatus !== "play" || clickedIndices.includes(i)}
+              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100"
+              key={i}
+              onClick={()=>{
+                setPlayerWord(prev => prev + word[i]);
+                setClickedIndices(prev => [...prev, i]);
+              }}
             >
               {word[i]}
             </button>)
           })}
         </div>
+        <button
+          className = "relative top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm"
+          onClick={() => resetWord()}>
+          Reset
+        </button>
         <GameOverlays gameStatus={gameStatus} onNewGame={newGame} />
       </div>
     </div>
