@@ -576,7 +576,6 @@ function GameOverlaysRoman({gameStatus, onNewGame}) {
       );
     }
 }
-
 //#endregion
 
 function App() {
