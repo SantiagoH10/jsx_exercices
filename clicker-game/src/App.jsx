@@ -455,10 +455,13 @@ function RomanNumerals() {
     console.log(roman);
     return roman;
   }
-  
+
   const [gameStatus, setGameStatus] = useState("newGame");
-  const [decimal, setDecimal] = useState(randNum());
-  const [roman, setRoman] = useState(decimalToRoman(decimal));
+  const [decimal, setDecimal] = useState(() => randNum());
+  const [roman, setRoman] = useState(() => {
+    const num = randNum();
+    return decimalToRoman(num);
+  });
   const [playerRoman, setPlayerRoman] = useState("");
 
   useEffect(() => {
@@ -471,10 +474,14 @@ function RomanNumerals() {
 
       const key = event.key.toUpperCase();
 
+      if (event.key === "Backspace" || event.key === "Delete") {
+        setPlayerRoman(prev => prev.slice(0, -1));
+        event.preventDefault();
+        return;
+      }
+
       if (romanSigns.includes(key)) {
         setPlayerRoman(prev => prev + key);
-
-        event.preventDefault();
       }
     };
 
@@ -483,20 +490,22 @@ function RomanNumerals() {
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-    
-  }, []);
+
+  }, [gameStatus, romanSigns]);
 
   function newGame() {
     setGameStatus("play");
     setPlayerRoman("");
-    setDecimal(randNum());
-    setRoman(decimalToRoman(decimal));
+    const newDecimal = randNum();
+    setDecimal(newDecimal);
+    setRoman(decimalToRoman(newDecimal));
   }
 
   function resetNum() {
     setPlayerRoman("");
-    setDecimal(randNum());
-    setRoman(decimalToRoman(decimal));
+    const newDecimal = randNum();
+    setDecimal(newDecimal);
+    setRoman(decimalToRoman(newDecimal));
   }
 
   return(
@@ -542,7 +551,7 @@ function GameOverlaysRoman({gameStatus, onNewGame}) {
   switch (gameStatus) {
     case "newGame":
       return(
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+        <div className="absolute inset-0 bg-black backdrop-blur bg-opacity-50 flex items-center justify-center rounded-lg">
           <div className="bg-white p-6 rounded-xl shadow-xl border-2 border-blue-500">
             <button
               className="bg-blue-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
