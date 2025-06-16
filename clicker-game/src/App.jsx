@@ -509,42 +509,42 @@ function RomanNumerals() {
   }
 
   return(
-    <div className="relative m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
-      <p className="text-xl font-bold text-gray-800 mb-4">Roman Numerals Training</p>
+  <div className="relative m-4 bg-yellow-100 p-12 rounded-lg shadow-lg border-2 border-roman-gold w-auto h-auto flex flex-col items-center justify-center">
+    <p className="text-xl font-bold text-roman-red mb-4">Roman Numerals Training</p>
+    <div>
       <div>
-        <div>
-          <p className="text-4xl text-gray-800">
-            {decimal}
-          </p>
-        </div>
-        <div className="p-2">
-          <p className="text-4xl text-gray-400">
-            {playerRoman === "" ? "?" : playerRoman}
-          </p>
-        </div>
-        <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap p-4">
-          {romanSigns.map(s => {
-            return(<button 
-              disabled={gameStatus !== "play"}
-              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100"
-              key={s}
-              onClick={()=>{
-                setPlayerRoman(prev => prev + s);
-              }}
-            >
-              {s}
-            </button>)
-          })}
-        </div>
-        <button
-          className = "relative bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm"
-          onClick={() => resetNum()}>
-          Change number
-        </button>
+        <p className="text-4xl text-roman-red font-bold">
+          {decimal}
+        </p>
       </div>
-      <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame} />
+      <div className="p-2">
+        <p className="text-4xl text-roman-gold/70">
+          {playerRoman === "" ? "?" : playerRoman}
+        </p>
+      </div>
+      <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap p-4">
+        {romanSigns.map(s => {
+          return(<button 
+            disabled={gameStatus !== "play"}
+            className="bg-roman-red hover:bg-roman-red/80 active:bg-roman-red/90 text-roman-gold font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100 border border-roman-gold"
+            key={s}
+            onClick={()=>{
+              setPlayerRoman(prev => prev + s);
+            }}
+          >
+            {s}
+          </button>)
+        })}
+      </div>
+      <button
+        className = "relative bg-roman-gold hover:bg-roman-gold/80 text-roman-red font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm border border-roman-red"
+        onClick={() => resetNum()}>
+        Change number
+      </button>
     </div>
-  )
+    <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame} />
+  </div>
+)
 }
 
 function GameOverlaysRoman({gameStatus, onNewGame}) {
@@ -552,9 +552,9 @@ function GameOverlaysRoman({gameStatus, onNewGame}) {
     case "newGame":
       return(
         <div className="absolute inset-0 bg-black backdrop-blur bg-opacity-50 flex items-center justify-center rounded-lg">
-          <div className="bg-white p-6 rounded-xl shadow-xl border-2 border-blue-500">
+          <div className="bg-gradient-to-br from-roman-gold/20 to-roman-red/20 backdrop-blur-sm p-6 rounded-xl shadow-xl border-2 border-roman-gold">
             <button
-              className="bg-blue-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
+              className="bg-roman-red hover:bg-roman-red/80 text-roman-gold font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg border border-roman-gold"
               onClick={()=>onNewGame()}
             >
               Start game
