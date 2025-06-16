@@ -293,7 +293,7 @@ function RpsGame() {
 
 //#region Word Scramble
 
-const word = "wolf"
+const word = "word"
 
 const gameOverlays = {
   newGame : "absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg",
@@ -340,6 +340,12 @@ function WordScramble() {
     <div className="m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
       <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble</p>
       <div>
+        <div id="wordGaps" className="flex flex-row items-center justify-center mb-4">          {word.split('').map((_, index) => (
+            <div className="w-8 h-10 border-b-2 border-gray-400 flex items-end justify-center text-xl font-bold text-gray-800 mx-1" key={index}>
+              {playerWord[index] || ""}
+            </div>
+          ))}
+        </div>
         <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap">
           {wordOrder.map(i => {
             return(<button 
