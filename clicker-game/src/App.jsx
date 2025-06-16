@@ -424,9 +424,6 @@ function GameOverlays({gameStatus, onNewGame}) {
   }
   
 }
-
-
-
 //#endregion
 
 //#region Roman Numerals
@@ -435,7 +432,7 @@ const romanSigns = ["I", "V", "X", "L", "C", "D", "M"];
 
 function RomanNumerals() {
   function randNum() {
-    const max = 9999;
+    const max = 2000;
     const min = 1;
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -448,74 +445,117 @@ function RomanNumerals() {
       romans : ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
     }
 
-    for (let i = 0; i < mapping.values.length; i++) {
+    for(let i = 0; i < mapping.values.length; i++) {
       if (num / mapping.values[i] >= 1) {
-        num = num % mapping.values[i];
         times = Math.floor(num / mapping.values[i]);
-        roman = mapping.romans[i].repeat(times);
+        roman += mapping.romans[i].repeat(times);
+        num = num % mapping.values[i];
       }
     }
-
+    console.log(roman);
     return roman;
   }
   
   const [gameStatus, setGameStatus] = useState("newGame");
   const [decimal, setDecimal] = useState(randNum());
+  const [roman, setRoman] = useState(decimalToRoman(decimal));
   const [playerRoman, setPlayerRoman] = useState("");
 
   useEffect(() => {
-    if (playerWord.length === word.length) {
-      playerWord === word ? setGameStatus("gameWon") : setGameStatus("gameOver")
-    }
-  }, [playerWord]);
+    playerRoman === roman ? newGame() : '';
+  }, [playerRoman]);
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (gameStatus !== "play") return;
+
+      const key = event.key.toUpperCase();
+
+      if (romanSigns.includes(key)) {
+        setPlayerRoman(prev => prev + key);
+
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+  
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+    
+  }, []);
 
   function newGame() {
     setGameStatus("play");
-    setPlayerWord("");
-    setWordOrder(randShuffle(word));
-    setClickedIndices([]);
+    setPlayerRoman("");
+    setDecimal(randNum());
+    setRoman(decimalToRoman(decimal));
   }
 
-  function resetWord() {
-    setPlayerWord("");
-    setClickedIndices([]);
+  function resetNum() {
+    setPlayerRoman("");
+    setDecimal(randNum());
+    setRoman(decimalToRoman(decimal));
   }
 
   return(
-    <div className="m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
-      <p className="text-xl font-bold text-gray-800 mb-4">Word Scramble</p>
+    <div className="relative m-4 bg-white p-12 rounded-lg shadow-lg border border-gray-200 w-auto h-auto flex flex-col items-center justify-center">
+      <p className="text-xl font-bold text-gray-800 mb-4">Roman Numerals Training</p>
       <div>
-        <div id="wordGaps" className="flex flex-row items-center justify-center mb-4">          {word.split('').map((_, index) => (
-            <div className="w-8 h-10 border-b-2 border-gray-400 flex items-end justify-center text-xl font-bold text-gray-800 mx-1" key={index}>
-              {playerWord[index] || ""}
-            </div>
-          ))}
+        <div>
+          <p className="text-4xl text-gray-800">
+            {decimal}
+          </p>
         </div>
-        <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap">
-          {wordOrder.map(i => {
+        <div className="p-2">
+          <p className="text-4xl text-gray-400">
+            {playerRoman === "" ? "?" : playerRoman}
+          </p>
+        </div>
+        <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap p-4">
+          {romanSigns.map(s => {
             return(<button 
-              disabled={gameStatus !== "play" || clickedIndices.includes(i)}
+              disabled={gameStatus !== "play"}
               className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100"
-              key={i}
+              key={s}
               onClick={()=>{
-                setPlayerWord(prev => prev + word[i]);
-                setClickedIndices(prev => [...prev, i]);
+                setPlayerRoman(prev => prev + s);
               }}
             >
-              {word[i]}
+              {s}
             </button>)
           })}
         </div>
         <button
-          className = "relative top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm"
-          onClick={() => resetWord()}>
-          Reset
+          className = "relative bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm"
+          onClick={() => resetNum()}>
+          Change number
         </button>
-        <GameOverlays gameStatus={gameStatus} onNewGame={newGame} />
       </div>
+      <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame} />
     </div>
   )
 }
+
+function GameOverlaysRoman({gameStatus, onNewGame}) {
+  switch (gameStatus) {
+    case "newGame":
+      return(
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+          <div className="bg-white p-6 rounded-xl shadow-xl border-2 border-blue-500">
+            <button
+              className="bg-blue-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg"
+              onClick={()=>onNewGame()}
+            >
+              Start game
+            </button>
+          </div>
+        </div>
+      );
+    }
+}
+
 //#endregion
 
 function App() {
