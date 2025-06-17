@@ -950,36 +950,30 @@ function InvertedRomanNumerals() {
 
   const [gameStatus, setGameStatus] = useState("newGame");
   const [decimal, setDecimal] = useState(() => randNum());
-  const [roman, setRoman] = useState(() => {
-    const num = randNum();
-    return decimalToRoman(num);
-  });
-  const [playerRoman, setPlayerRoman] = useState("");
+  const [playerDecimal, setPlayerDecimal] = useState("");
   const [w, setW] = useState(false);
 
   useEffect(() => {
-    if (playerRoman === roman) {
+    if (parseInt(playerDecimal) === decimal) {
       setW(true);
       setTimeout(() => {
         newGame();
       }, 500);
     }
-  }, [playerRoman]);
+  }, [playerDecimal]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (gameStatus !== "play") return;
 
-      const key = event.key.toUpperCase();
-
       if (event.key === "Backspace" || event.key === "Delete") {
-        setPlayerRoman(prev => prev.slice(0, -1));
+        setPlayerDecimal(prev => prev.slice(0, -1));
         event.preventDefault();
         return;
       }
 
-      if (romanSigns.includes(key)) {
-        setPlayerRoman(prev => prev + key);
+      if ("0123456789".includes(event.key)) {
+        setPlayerDecimal(prev => prev + event.key);
       }
     };
 
@@ -989,22 +983,20 @@ function InvertedRomanNumerals() {
       document.removeEventListener('keydown', handleKeyPress);
     };
 
-  }, [gameStatus, romanSigns]);
+  }, [gameStatus]);
 
   function newGame() {
     setGameStatus("play");
-    setPlayerRoman("");
+    setPlayerDecimal("");
     const newDecimal = randNum();
     setDecimal(newDecimal);
-    setRoman(decimalToRoman(newDecimal));
     setW(false);
   }
 
   function resetNum() {
-    setPlayerRoman("");
+    setPlayerDecimal("");
     const newDecimal = randNum();
     setDecimal(newDecimal);
-    setRoman(decimalToRoman(newDecimal));
   }
 
   return(
@@ -1013,7 +1005,7 @@ function InvertedRomanNumerals() {
     <div>
       <div className="bg-roman-red/10 border-t-2 border-b-2 border-roman-gold py-4 px-8 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-roman-gold after:absolute after:right-0 after:top-0 after:bottom-0 after:w-1 after:bg-roman-gold">
         <p className="text-4xl text-roman-red font-bold text-center">
-          {decimal}
+          {decimalToRoman(decimal)}
         </p>
       </div>
       <div className={`p-2 m-5 rounded-lg min-h-[4rem] flex items-center justify-center transition-all duration-500 ${
@@ -1023,34 +1015,33 @@ function InvertedRomanNumerals() {
         }`}
         >
         <p className="text-4xl text-roman-gold/70 font-bold">
-          {playerRoman === "" ? "?" : playerRoman}
+          {playerDecimal === "" ? "?" : playerDecimal}
         </p>
       </div>
       <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap p-4">
-        {romanSigns.map(s => {
+        {[...Array(10).keys()].map(num => {
           return(<button 
             disabled={gameStatus !== "play"}
             className="bg-roman-red hover:bg-roman-red/80 active:bg-roman-red/90 text-roman-gold font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100 border border-roman-gold"
-            key={s}
+            key={num}
             onClick={()=>{
-              setPlayerRoman(prev => prev + s);
+              setPlayerDecimal(prev => prev + num);
             }}
           >
-            {s}
+            {num}
           </button>)
         })}
       </div>
       <button
         className = "relative bg-roman-gold hover:bg-roman-gold/80 text-roman-red font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm border border-roman-red"
         onClick={() => resetNum()}>
-        Change number
+        Change roman numeral
       </button>
     </div>
     <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame} isInverted={true}/>
   </div>
 )
 }
-
 //#endregion
 
 //#region NumeralSwitch
