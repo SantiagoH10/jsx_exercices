@@ -1,7 +1,7 @@
 //#region Imports - My Sociabble
 import './App.css'
 import cma from './assets/cma.png'
-import { useState, useRef, useEffect, StrictMode } from 'react'
+import { useState, useRef, useEffect, StrictMode, useReducer } from 'react'
 
 function MySociabble() {
   return(
@@ -922,6 +922,36 @@ function GameOverlaysRoman({gameStatus, onNewGame, isInverted = false}) {
 //#endregion
 
 //#region Inverted RomanNumerals (roman to decimal)
+const ACTIONS = {
+  NEW_GAME: 'NEW_GAME',
+  ADD_DIGIT: 'ADD_DIGIT', 
+  REMOVE_DIGIT: 'REMOVE_DIGIT',
+  SET_WIN: 'SET_WIN',
+  RESET_NUMBER: 'RESET_NUMBER'
+};
+
+function romanNumeralsReducer(state, action) {
+  switch (action.type) {
+    case ACTIONS.NEW_GAME:
+      return { ...state, gameStatus: 'play', w: false};
+
+    case ACTIONS.ADD_DIGIT:
+      return { ...state, playerDecimal: state.playerDecimal + actions.payload };
+
+    case ACTIONS.REMOVE_DIGIT:
+      return { ...state, playerDecimal: state.playerDecimal.slice(0, -1) };
+
+    case ACTIONS.SET_WIN:
+      return { ...state, w:true};
+    
+    case ACTIONS.RESET_NUMBER:
+      return { ...state, playerDecimal : "", decimal: randNum()};
+    
+    default:
+      throw new Error(`Unknown action: ${action.type}`);
+  }
+}
+
 function InvertedRomanNumerals() {
   function randNum() {
     const max = 2000;
@@ -948,32 +978,42 @@ function InvertedRomanNumerals() {
     return roman;
   }
 
-  const [gameStatus, setGameStatus] = useState("newGame");
-  const [decimal, setDecimal] = useState(() => randNum());
-  const [playerDecimal, setPlayerDecimal] = useState("");
-  const [w, setW] = useState(false);
+  const initialState = {
+    gameStatus: "newGame",
+    decimal: randNum(),
+    playerDecimal: "",
+    w: false
+  }
+
+  const [state, dispatch] = useReducer(romanNumeralsReducer, initialState)
+
+  // const [gameStatus, setGameStatus] = useState("newGame");
+  // const [decimal, setDecimal] = useState(() => randNum());
+  // const [playerDecimal, setPlayerDecimal] = useState("");
+  // const [w, setW] = useState(false);
+
 
   useEffect(() => {
-    if (parseInt(playerDecimal) === decimal) {
-      setW(true);
+    if (parseInt(state.playerDecimal) === state.decimal) {
+      dispatch({ type: ACTIONS.SET_WIN });
       setTimeout(() => {
-        newGame();
+        dispatch({ type: ACTIONS.NEW_GAME });
       }, 500);
     }
-  }, [playerDecimal]);
+  }, [state.playerDecimal, state.decimal]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (gameStatus !== "play") return;
+      if (state.gameStatus !== "play") return;
 
       if (event.key === "Backspace" || event.key === "Delete") {
-        setPlayerDecimal(prev => prev.slice(0, -1));
+        dispatch({ type: ACTIONS.REMOVE_DIGIT });
         event.preventDefault();
         return;
       }
 
       if ("0123456789".includes(event.key)) {
-        setPlayerDecimal(prev => prev + event.key);
+        dispatch({ type: ACTIONS.ADD_DIGIT, payload: event.key});
       }
     };
 
@@ -983,21 +1023,21 @@ function InvertedRomanNumerals() {
       document.removeEventListener('keydown', handleKeyPress);
     };
 
-  }, [gameStatus]);
+  }, [state.gameStatus]);
 
-  function newGame() {
-    setGameStatus("play");
-    setPlayerDecimal("");
-    const newDecimal = randNum();
-    setDecimal(newDecimal);
-    setW(false);
-  }
+  // function newGame() {
+  //   setGameStatus("play");
+  //   setPlayerDecimal("");
+  //   const newDecimal = randNum();
+  //   setDecimal(newDecimal);
+  //   setW(false);
+  // }
 
-  function resetNum() {
-    setPlayerDecimal("");
-    const newDecimal = randNum();
-    setDecimal(newDecimal);
-  }
+  // function resetNum() {
+  //   setPlayerDecimal("");
+  //   const newDecimal = randNum();
+  //   setDecimal(newDecimal);
+  // }
 
   return(
   <div className="relative m-4 bg-yellow-100 p-12 rounded-lg shadow-lg border-2 border-roman-gold w-auto h-auto flex flex-col items-center justify-center">
@@ -1005,7 +1045,7 @@ function InvertedRomanNumerals() {
     <div>
       <div className="bg-roman-red/10 border-t-2 border-b-2 border-roman-gold py-4 px-8 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-roman-gold after:absolute after:right-0 after:top-0 after:bottom-0 after:w-1 after:bg-roman-gold">
         <p className="text-4xl text-roman-red font-bold text-center">
-          {decimalToRoman(decimal)}
+          {decimalToRoman(state.decimal)}
         </p>
       </div>
       <div className={`p-2 m-5 rounded-lg min-h-[4rem] flex items-center justify-center transition-all duration-500 ${
@@ -1015,17 +1055,17 @@ function InvertedRomanNumerals() {
         }`}
         >
         <p className="text-4xl text-roman-gold/70 font-bold">
-          {playerDecimal === "" ? "?" : playerDecimal}
+          {state.playerDecimal === "" ? "?" : state.playerDecimal}
         </p>
       </div>
       <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap p-4">
         {[...Array(10).keys()].map(num => {
           return(<button 
-            disabled={gameStatus !== "play"}
+            disabled={state.gameStatus !== "play"}
             className="bg-roman-red hover:bg-roman-red/80 active:bg-roman-red/90 text-roman-gold font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100 border border-roman-gold"
             key={num}
             onClick={()=>{
-              setPlayerDecimal(prev => prev + num);
+              dispatch({ type: ACTIONS.ADD_DIGIT, payload: num});
             }}
           >
             {num}
@@ -1034,11 +1074,11 @@ function InvertedRomanNumerals() {
       </div>
       <button
         className = "relative bg-roman-gold hover:bg-roman-gold/80 text-roman-red font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm border border-roman-red"
-        onClick={() => resetNum()}>
+        onClick={() => dispatch({ type: ACTIONS.RESET_NUMBER})}>
         Change roman numeral
       </button>
     </div>
-    <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame} isInverted={true}/>
+    <GameOverlaysRoman gameStatus={state.gameStatus} onNewGame={dispatch({ type: ACTIONS.NEW_GAME})} isInverted={true}/>
   </div>
 )
 }
