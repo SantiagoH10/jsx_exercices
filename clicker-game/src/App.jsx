@@ -426,6 +426,344 @@ function GameOverlays({gameStatus, onNewGame}) {
 }
 //#endregion
 
+//#region Color Memory Game
+function NewRoundOverlay({ onNewRound }) {
+  return (
+    <div className="absolute inset-0 bg-black/60 backdrop-blur-xl flex items-center justify-center z-50 animate-fadeIn">
+      {/* Floating particles effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-green-400 rounded-full opacity-60 animate-ping"></div>
+        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-blue-400 rounded-full opacity-40 animate-ping animation-delay-1000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-purple-400 rounded-full opacity-50 animate-ping animation-delay-2000"></div>
+      </div>
+
+      <div className="relative transform scale-95 animate-slideUp">
+        {/* Glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl scale-110"></div>
+        
+        {/* Main container */}
+        <div className="relative bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 p-10 text-center min-w-80">
+          {/* Success icon */}
+          <div className="mb-6 flex justify-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Round Complete!
+          </h2>
+          
+          <p className="text-white/80 text-lg mb-8 font-medium">
+            Great memory! Ready for the next challenge?
+          </p>
+
+          <button
+            onClick={onNewRound}
+            className="group relative px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-bold text-lg rounded-2xl shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-green-300/50 overflow-hidden"
+          >
+            {/* Button shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            
+            <span className="relative flex items-center justify-center gap-2">
+              Next Round
+              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GameOverOverlay({ onNewGame, round }) {
+  return (
+    <div className="absolute inset-0 bg-black/60 backdrop-blur-xl flex items-center justify-center z-50 animate-fadeIn">
+      {/* Floating particles effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-red-400 rounded-full opacity-60 animate-ping"></div>
+        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-orange-400 rounded-full opacity-40 animate-ping animation-delay-1000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-pink-400 rounded-full opacity-50 animate-ping animation-delay-2000"></div>
+      </div>
+
+      <div className="relative transform scale-95 animate-slideUp">
+        {/* Glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-red-400/20 via-orange-500/20 to-pink-500/20 rounded-3xl blur-xl scale-110"></div>
+        
+        {/* Main container */}
+        <div className="relative bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 p-10 text-center min-w-80">
+          {/* Game over icon */}
+          <div className="mb-6 flex justify-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-black mb-2 bg-gradient-to-r from-red-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
+            Game Over
+          </h2>
+          
+          <p className="text-white/80 text-lg mb-6 font-medium">
+            Don't worry, practice makes perfect!
+          </p>
+
+          {/* Score display */}
+          <div className="mb-8 inline-block">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 rounded-2xl blur-lg"></div>
+              <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 px-6 py-4">
+                <p className="text-sm font-medium text-white/70 mb-1">Final Score</p>
+                <p className="text-4xl font-black bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                  {round}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={onNewGame}
+            className="group relative px-10 py-4 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white font-bold text-lg rounded-2xl shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-300/50 overflow-hidden"
+          >
+            {/* Button shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            
+            <span className="relative flex items-center justify-center gap-2">
+              Try Again
+              <svg className="w-5 h-5 transform group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+function ColorMemoryGame() {
+
+  const randColor = () => {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  };
+
+  //State variables
+  const [round, setRound] = useState(0);
+  const [colorArray, setColorArray] = useState([randColor()]);
+  const [computerColorSeq, setComputerColorSeq] = useState([]);
+  const [playerColorSeq, setPlayerColorSeq] = useState([]);
+  const [gameStatus, setGameStatus] = useState('wait-game-start');
+  const [highlightSquare, setHighlightSquare] = useState(null);
+  const [playerPos, setPlayerPos] = useState(null);
+
+  //useEffect hooks
+  useEffect(() => {
+    if (gameStatus === 'showing') {
+      const shuffledSequence = randShuffle();
+      setComputerColorSeq(shuffledSequence);
+      console.log(computerColorSeq);
+      showSequence(shuffledSequence);
+    }
+  }, [colorArray]);
+
+  //Helper functions
+  function randShuffle() {
+    const indices = Array.from({length: colorArray.length}, (_, i) => i);
+    
+    // Fisher-Yates shuffle
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]]; // Swap
+    }
+
+    return indices;
+  }
+
+  function showNextSquare(index, shuffledSequence) {
+    if (index >= shuffledSequence.length) {
+      setHighlightSquare(null);
+      setGameStatus('playing');
+      return;
+    }
+
+    setHighlightSquare(shuffledSequence[index]);
+
+    setTimeout(() => {
+      setHighlightSquare(null);
+
+      setTimeout(() => {
+        showNextSquare(index + 1, shuffledSequence);
+      }, 200);
+
+    }, 800);
+  }  
+
+  function showSequence(shuffledSequence) {
+    showNextSquare(0, shuffledSequence); // Start the recursive sequence
+  }
+
+  function NewRound() {
+    console.log("New round called");
+    setGameStatus('showing');
+    setRound(round + 1);
+    setColorArray([...colorArray, randColor()]);
+  }
+
+
+  function handlePlayerClick(i, c) {
+    setPlayerPos(prevPos => {
+      const newPos = prevPos + 1;
+      if (i === parseInt(computerColorSeq[newPos - 1])) {
+        if(newPos === computerColorSeq.length) {
+          setGameStatus('wait-new-round');
+          console.log("correct sequence");
+          return null;
+        }
+        console.log("correct color, continue");
+        return newPos;
+      } else {
+        setGameStatus('game-over');
+        return newPos;
+      }
+    });
+  }
+
+  function NewGame() {
+    setRound(0);
+    setColorArray([randColor()]);
+    setComputerColorSeq([]);
+    setPlayerColorSeq([]);
+    setGameStatus('wait-game-start');
+    setPlayerPos(null);
+    setHighlightSquare(null);
+  }
+
+
+  return(
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 flex flex-col items-center justify-center">
+  {/* Background decoration */}
+  <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+    <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+  </div>
+
+  <div className="relative z-10 w-full max-w-md mx-auto">
+    {/* Round Counter */}
+    <div className="flex justify-center mb-8">
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-2xl blur-lg opacity-75"></div>
+        <p className="relative text-white text-3xl font-black tracking-wide px-8 py-4 bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl rounded-2xl shadow-2xl text-center border border-white/20">
+          {round === 0 ? (
+            <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+              Memory Game
+            </span>
+          ) : (
+            <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+              Round {round}
+            </span>
+          )}
+        </p>
+      </div>
+    </div>
+
+    {/* Game Container */}
+    <div className="relative">
+      {/* Glass container background */}
+      <div className="absolute inset-0 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl"></div>
+      
+      {/* Game Grid */}
+      <div className="relative p-8">
+        <div className="grid grid-cols-2 gap-6 justify-items-center">
+          {colorArray.map((c, i) => (
+            <div key={i} className="relative group">
+              {/* Button glow effect */}
+              <div className={`
+                absolute inset-0 rounded-2xl transition-all duration-300
+                ${highlightSquare === i 
+                  ? 'bg-yellow-400/50 blur-xl scale-110' 
+                  : 'bg-white/10 blur-lg scale-95 group-hover:scale-105'
+                }
+              `}></div>
+              
+              <button 
+                onClick={(e) => {
+                  e.target.blur();
+                  if (gameStatus === "wait-game-start" && i === 0) {
+                    NewRound();
+                  } else if (gameStatus === "playing") {
+                    handlePlayerClick(i, c);
+                  }
+                }}
+                className={`
+                  relative w-28 h-28 rounded-2xl shadow-xl transform transition-all duration-200 border-2 border-white/30
+                  focus:outline-none cursor-pointer overflow-hidden group
+                  hover:scale-105 hover:shadow-2xl hover:border-white/50
+                  active:scale-95 active:shadow-inner
+                  ${(gameStatus === "wait-game-start" && i === 0) ? 'ring-4 ring-cyan-400/60 animate-pulse' : ''}
+                  ${highlightSquare === i ? 'ring-4 ring-yellow-400/80 scale-110 shadow-yellow-400/50' : ''}
+                `}
+                style={{ 
+                  backgroundColor: c,
+                  boxShadow: `0 8px 32px ${c}40, inset 0 2px 4px rgba(255,255,255,0.2)`
+                }}
+              >
+                {/* Inner highlight */}
+                <div className="absolute inset-2 rounded-xl bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
+                
+                {/* Start button text */}
+                {gameStatus === "wait-game-start" && i === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-white font-black text-lg drop-shadow-lg tracking-wider">
+                      START
+                    </span>
+                  </div>
+                )}
+
+                {/* Ripple effect */}
+                <div className="absolute inset-0 bg-white/20 rounded-2xl scale-0 group-active:scale-100 transition-transform duration-150"></div>
+              </button>
+            </div>
+          ))}
+        </div>
+
+        
+      </div>
+      {gameStatus === "wait-new-round" && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <NewRoundOverlay onNewRound={NewRound} />
+          </div>
+        )}
+        
+        {gameStatus === "game-over" && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <GameOverOverlay onNewGame={NewGame} round={round} />
+          </div>
+        )}
+    </div>
+
+    {/* Game Instructions */}
+    <div className="mt-8 text-center">
+      <p className="text-white/80 text-sm font-medium backdrop-blur-sm bg-black/20 rounded-xl px-4 py-2 border border-white/10">
+        {gameStatus === "wait-game-start" && "Click START to begin the memory challenge"}
+        {gameStatus === "playing" && "Watch the sequence, then repeat it"}
+        {gameStatus === "wait-new-round" && "Get ready for the next round"}
+        {gameStatus === "game-over" && "Challenge yourself to beat your score"}
+      </p>
+    </div>
+  </div>
+</div>
+  )
+}
+//#endregion
+
 //#region Roman Numerals
 
 const romanSigns = ["I", "V", "X", "L", "C", "D", "M"];
@@ -564,13 +902,16 @@ function GameOverlaysRoman({gameStatus, onNewGame}) {
     case "newGame":
       return(
         <div className="absolute inset-0 bg-black backdrop-blur bg-opacity-50 flex items-center justify-center rounded-lg">
-          <div className="bg-gradient-to-br from-roman-gold/20 to-roman-red/20 backdrop-blur-sm p-6 rounded-xl shadow-xl border-2 border-roman-gold">
-            <button
-              className="bg-roman-red hover:bg-roman-red/80 text-roman-gold font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg border border-roman-gold"
-              onClick={()=>onNewGame()}
-            >
-              Start game
-            </button>
+          <div className="bg-gradient-to-br from-roman-gold/20 to-roman-red/20 backdrop-blur-sm p-6 rounded-xl shadow-xl border-2 border-roman-gold flex flex-col items-center">
+        <p className="text-xl font-bold text-roman-gold mb-4 text-center">
+          Roman Numerals to Decimal
+        </p>
+        <button
+          className="bg-roman-red hover:bg-roman-red/80 text-roman-gold font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg border border-roman-gold"
+          onClick={()=>onNewGame()}
+        >
+          Start game
+        </button>
           </div>
         </div>
       );
@@ -583,6 +924,7 @@ function App() {
     <StrictMode>
       <div>
         <MySociabble/>
+        <ColorMemoryGame/>
         <RomanNumerals/>
       </div>
     </StrictMode>
