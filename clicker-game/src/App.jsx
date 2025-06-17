@@ -1,3 +1,4 @@
+//#region Imports - My Sociabble
 import './App.css'
 import cma from './assets/cma.png'
 import { useState, useRef, useEffect, StrictMode } from 'react'
@@ -14,6 +15,7 @@ function MySociabble() {
     </div>
   )
 }
+//#endregion
 
 //#region Clicker game
 class ClickUpgrade {
@@ -892,19 +894,19 @@ function RomanNumerals() {
         Change number
       </button>
     </div>
-    <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame} />
+    <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame}/>
   </div>
 )
 }
 
-function GameOverlaysRoman({gameStatus, onNewGame}) {
+function GameOverlaysRoman({gameStatus, onNewGame, isInverted = false}) {
   switch (gameStatus) {
     case "newGame":
       return(
         <div className="absolute inset-0 bg-black backdrop-blur bg-opacity-50 flex items-center justify-center rounded-lg">
           <div className="bg-gradient-to-br from-roman-gold/20 to-roman-red/20 backdrop-blur-sm p-6 rounded-xl shadow-xl border-2 border-roman-gold flex flex-col items-center">
         <p className="text-xl font-bold text-roman-gold mb-4 text-center">
-          Roman Numerals to Decimal
+          {isInverted ? "Roman Numerals to Decimal" : "Decimal to Roman Numerals"}
         </p>
         <button
           className="bg-roman-red hover:bg-roman-red/80 text-roman-gold font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg shadow-md hover:shadow-lg border border-roman-gold"
@@ -919,13 +921,259 @@ function GameOverlaysRoman({gameStatus, onNewGame}) {
 }
 //#endregion
 
+//#region Inverted RomanNumerals (roman to decimal)
+function InvertedRomanNumerals() {
+  function randNum() {
+    const max = 2000;
+    const min = 1;
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  function decimalToRoman(num) {
+    let roman = "";
+    let times = 0;
+    const mapping = {
+      values : [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1],
+      romans : ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+    }
+
+    for(let i = 0; i < mapping.values.length; i++) {
+      if (num / mapping.values[i] >= 1) {
+        times = Math.floor(num / mapping.values[i]);
+        roman += mapping.romans[i].repeat(times);
+        num = num % mapping.values[i];
+      }
+    }
+    console.log(roman);
+    return roman;
+  }
+
+  const [gameStatus, setGameStatus] = useState("newGame");
+  const [decimal, setDecimal] = useState(() => randNum());
+  const [roman, setRoman] = useState(() => {
+    const num = randNum();
+    return decimalToRoman(num);
+  });
+  const [playerRoman, setPlayerRoman] = useState("");
+  const [w, setW] = useState(false);
+
+  useEffect(() => {
+    if (playerRoman === roman) {
+      setW(true);
+      setTimeout(() => {
+        newGame();
+      }, 500);
+    }
+  }, [playerRoman]);
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (gameStatus !== "play") return;
+
+      const key = event.key.toUpperCase();
+
+      if (event.key === "Backspace" || event.key === "Delete") {
+        setPlayerRoman(prev => prev.slice(0, -1));
+        event.preventDefault();
+        return;
+      }
+
+      if (romanSigns.includes(key)) {
+        setPlayerRoman(prev => prev + key);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+  
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+
+  }, [gameStatus, romanSigns]);
+
+  function newGame() {
+    setGameStatus("play");
+    setPlayerRoman("");
+    const newDecimal = randNum();
+    setDecimal(newDecimal);
+    setRoman(decimalToRoman(newDecimal));
+    setW(false);
+  }
+
+  function resetNum() {
+    setPlayerRoman("");
+    const newDecimal = randNum();
+    setDecimal(newDecimal);
+    setRoman(decimalToRoman(newDecimal));
+  }
+
+  return(
+  <div className="relative m-4 bg-yellow-100 p-12 rounded-lg shadow-lg border-2 border-roman-gold w-auto h-auto flex flex-col items-center justify-center">
+    <p className="text-xl font-bold text-roman-red mb-4">Roman Numerals Training</p>
+    <div>
+      <div className="bg-roman-red/10 border-t-2 border-b-2 border-roman-gold py-4 px-8 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-roman-gold after:absolute after:right-0 after:top-0 after:bottom-0 after:w-1 after:bg-roman-gold">
+        <p className="text-4xl text-roman-red font-bold text-center">
+          {decimal}
+        </p>
+      </div>
+      <div className={`p-2 m-5 rounded-lg min-h-[4rem] flex items-center justify-center transition-all duration-500 ${
+          w 
+            ? "bg-green border-2 border-solid border-roman-gold shadow-lg shadow-roman-gold/50" 
+            : "bg-roman-red/5 border-2 border-dashed border-roman-gold/50"
+        }`}
+        >
+        <p className="text-4xl text-roman-gold/70 font-bold">
+          {playerRoman === "" ? "?" : playerRoman}
+        </p>
+      </div>
+      <div id="buttonContainer" className="flex flex-row gap-3 items-center justify-center flex-wrap p-4">
+        {romanSigns.map(s => {
+          return(<button 
+            disabled={gameStatus !== "play"}
+            className="bg-roman-red hover:bg-roman-red/80 active:bg-roman-red/90 text-roman-gold font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-xl min-w-[3rem] min-h-[3rem] flex items-center justify-center cursor-pointer select-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400 disabled:hover:scale-100 border border-roman-gold"
+            key={s}
+            onClick={()=>{
+              setPlayerRoman(prev => prev + s);
+            }}
+          >
+            {s}
+          </button>)
+        })}
+      </div>
+      <button
+        className = "relative bg-roman-gold hover:bg-roman-gold/80 text-roman-red font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm border border-roman-red"
+        onClick={() => resetNum()}>
+        Change number
+      </button>
+    </div>
+    <GameOverlaysRoman gameStatus={gameStatus} onNewGame={newGame} isInverted={true}/>
+  </div>
+)
+}
+
+//#endregion
+
+//#region NumeralSwitch
+function NumeralsSwitch() {
+  const [isInverted, setIsInverted] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 p-6">
+      <div className="w-full max-w-5xl mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-12">
+          {/* Main Title */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 via-yellow-400/20 to-orange-400/20 blur-2xl rounded-full"></div>
+            <h1 className="relative text-5xl font-black bg-gradient-to-r from-amber-700 via-yellow-600 to-orange-700 bg-clip-text text-transparent mb-2 tracking-tight">
+              Roman Numerals
+            </h1>
+            <p className="text-amber-600/80 text-lg font-medium">Ancient Numbers, Modern Converter</p>
+          </div>
+          
+          {/* Enhanced Toggle Switch Container */}
+          <div className="inline-flex items-center justify-center mb-6">
+            <div className="relative bg-white/80 backdrop-blur-sm p-3 rounded-3xl shadow-2xl border border-amber-200/50 hover:shadow-amber-200/50 transition-all duration-300">
+              {/* Background slider with glow effect */}
+              <div className={`
+                absolute top-3 w-1/2 h-14 bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 rounded-2xl shadow-lg transition-all duration-400 ease-out
+                ${isInverted ? 'translate-x-full' : 'translate-x-0'}
+              `}>
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-400/50 to-orange-400/50 rounded-2xl blur-md"></div>
+              </div>
+              
+              {/* Decimal to Roman Button */}
+              <button 
+                className={`
+                  relative z-10 px-8 py-4 rounded-2xl font-bold text-sm transition-all duration-300 ease-out min-w-48 mx-1 group
+                  ${!isInverted 
+                    ? 'text-white drop-shadow-lg' 
+                    : 'text-amber-800 hover:text-amber-900 hover:bg-amber-50/50'
+                  }
+                `}
+                onClick={() => setIsInverted(false)}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span className="text-lg">123</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                  </svg>
+                  <span className="font-serif text-lg">CXXIII</span>
+                </span>
+              </button>
+              
+              {/* Roman to Decimal Button */}
+              <button 
+                className={`
+                  relative z-10 px-8 py-4 rounded-2xl font-bold text-sm transition-all duration-300 ease-out min-w-48 mx-1 group
+                  ${isInverted 
+                    ? 'text-white drop-shadow-lg' 
+                    : 'text-amber-800 hover:text-amber-900 hover:bg-amber-50/50'
+                  }
+                `}
+                onClick={() => setIsInverted(true)}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span className="font-serif text-lg">CXXIII</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                  </svg>
+                  <span className="text-lg">123</span>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          {/* Enhanced Mode Description */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-100/50 to-yellow-100/50 rounded-2xl blur-sm"></div>
+            <div className="relative bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-3 border border-amber-200/30 inline-block">
+              <p className="text-amber-800 text-base font-semibold flex items-center justify-center gap-2">
+                <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                {isInverted 
+                  ? "Transform Roman numerals into modern decimal numbers" 
+                  : "Convert modern numbers into ancient Roman numerals"
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Section with enhanced transitions */}
+        <div className="relative min-h-96">
+          {/* Decimal to Roman Content */}
+          <div className={`
+            transition-all duration-600 ease-in-out transform
+            ${!isInverted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 absolute inset-0 pointer-events-none'}
+          `}>
+            <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-xl border border-amber-200/50 p-8">
+              <RomanNumerals />
+            </div>
+          </div>
+          
+          {/* Roman to Decimal Content */}
+          <div className={`
+            transition-all duration-600 ease-in-out transform
+            ${isInverted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 absolute inset-0 pointer-events-none'}
+          `}>
+            <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-xl border border-amber-200/50 p-8">
+              <InvertedRomanNumerals />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+//#endregion
+
 function App() {
   return (
     <StrictMode>
       <div>
         <MySociabble/>
         <ColorMemoryGame/>
-        <RomanNumerals/>
+        <NumeralsSwitch/>
       </div>
     </StrictMode>
   )
