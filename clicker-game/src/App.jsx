@@ -933,10 +933,10 @@ const ACTIONS = {
 function romanNumeralsReducer(state, action) {
   switch (action.type) {
     case ACTIONS.NEW_GAME:
-      return { ...state, gameStatus: 'play', w: false};
+      return { ...state, gameStatus: 'play', w: false, playerDecimal: "", decimal: action.payload};
 
     case ACTIONS.ADD_DIGIT:
-      return { ...state, playerDecimal: state.playerDecimal + actions.payload };
+      return { ...state, playerDecimal: state.playerDecimal + action.payload };
 
     case ACTIONS.REMOVE_DIGIT:
       return { ...state, playerDecimal: state.playerDecimal.slice(0, -1) };
@@ -945,7 +945,7 @@ function romanNumeralsReducer(state, action) {
       return { ...state, w:true};
     
     case ACTIONS.RESET_NUMBER:
-      return { ...state, playerDecimal : "", decimal: randNum()};
+      return { ...state, playerDecimal : "", decimal: action.payload};
     
     default:
       throw new Error(`Unknown action: ${action.type}`);
@@ -997,7 +997,7 @@ function InvertedRomanNumerals() {
     if (parseInt(state.playerDecimal) === state.decimal) {
       dispatch({ type: ACTIONS.SET_WIN });
       setTimeout(() => {
-        dispatch({ type: ACTIONS.NEW_GAME });
+        dispatch({ type: ACTIONS.NEW_GAME, payload: randNum()});
       }, 500);
     }
   }, [state.playerDecimal, state.decimal]);
@@ -1049,7 +1049,7 @@ function InvertedRomanNumerals() {
         </p>
       </div>
       <div className={`p-2 m-5 rounded-lg min-h-[4rem] flex items-center justify-center transition-all duration-500 ${
-          w 
+          state.w 
             ? "bg-green border-2 border-solid border-roman-gold shadow-lg shadow-roman-gold/50" 
             : "bg-roman-red/5 border-2 border-dashed border-roman-gold/50"
         }`}
@@ -1074,11 +1074,11 @@ function InvertedRomanNumerals() {
       </div>
       <button
         className = "relative bg-roman-gold hover:bg-roman-gold/80 text-roman-red font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm border border-roman-red"
-        onClick={() => dispatch({ type: ACTIONS.RESET_NUMBER})}>
+        onClick={() => dispatch({ type: ACTIONS.RESET_NUMBER, payload: randNum()})}>
         Change roman numeral
       </button>
     </div>
-    <GameOverlaysRoman gameStatus={state.gameStatus} onNewGame={dispatch({ type: ACTIONS.NEW_GAME})} isInverted={true}/>
+    <GameOverlaysRoman gameStatus={state.gameStatus} onNewGame={() => dispatch({ type: ACTIONS.NEW_GAME, payload: randNum()})} isInverted={true}/>
   </div>
 )
 }
